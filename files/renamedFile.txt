@@ -1,0 +1,3 @@
+New file appended
+
+Some more text added into file with callback
