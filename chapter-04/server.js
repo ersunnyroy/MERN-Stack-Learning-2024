@@ -2,6 +2,9 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const PORT = process.env.PORT || 3500;
+const cors = require('cors');
+
+const {logger} = require('./middleware/logEvents');
 
 // built in middleware to handle urlencoded data
 // in other words form-data
@@ -11,9 +14,18 @@ app.use(express.urlencoded({ extended: false }));
 // built in middleware for handling json data 
 app.use(express.json());
 
+// third party middleware 
+
 // built in middleware for serving static files
 // we have to mode all the public files inside public directory
 app.use(express.static(path.join(__dirname, '/public')));
+
+
+
+app.use(logger);
+
+// third party cors middleware // CROSS ORIGIN RESOURCE SHARING
+app.use(cors());
 
 // regex to make the route work with only /  or only index or index.html in url
 app.get('^/$|/index(.html)?', (req, res) => {
