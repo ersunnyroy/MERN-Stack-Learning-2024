@@ -93,6 +93,7 @@ app.get('/*', (req, res) => {
     res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
 });
 
+
 app.use(errorHandler);
 
 app.listen(PORT, () => console.log(`Server is running on PORT : ${PORT}`));
