@@ -12,6 +12,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 // built in middleware for serving static files
+// we have to mode all the public files inside public directory
 app.use(express.static(path.join(__dirname, '/public')));
 
 // regex to make the route work with only /  or only index or index.html in url
