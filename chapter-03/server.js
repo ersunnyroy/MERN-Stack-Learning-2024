@@ -24,6 +24,7 @@ const serverFile = async (filePath, contentType, response) => {
         response.writeHead(
             filePath.includes('404') ? 404 : 200,
             { 'Content-Type': contentType });
+         
         response.end(
             contentType === 'application/json' ? JSON.stringify(data) : data
         );
@@ -47,7 +48,7 @@ const server = http.createServer((req, res) => {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'text/html');
         filePath = path.join(__dirname, 'views', 'index.html');
-        fs.readFil(filePath, 'utf8', (err, data) => {
+        fs.readFile(filePath, 'utf8', (err, data) => {
             res.end(data);
         });
     }
