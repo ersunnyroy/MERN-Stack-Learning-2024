@@ -17,19 +17,28 @@ const PORT = process.env.PORT || 3500;
 
 const serverFile = async (filePath, contentType, response) => {
     try {
-        const data = await fsPromises.readFile(filePath, 'utf8');
-        response.writeHead(200, { 'Content-Type' : contentType });
-        response.end(data);
-    } catch(error) {
+        const rawData = await fsPromises.readFile(filePath,
+            !contentType.includes('image') ? 'utf8' : ''
+        );
+        const data = contentType === 'application/json' ? JSON.parse(rawData) : rawData;
+        response.writeHead(
+            filePath.includes('404') ? 404 : 200,
+            { 'Content-Type': contentType });
+        response.end(
+            contentType === 'application/json' ? JSON.stringify(data) : data
+        );
+    } catch (error) {
         console.log(error);
+        myEmitter.emit('log', `${error.name}: ${error.message} at ${error.line}`, 'errorLog.txt');
         response.statusCode = 500;
         response.end();
     }
-}   
+}
 
 // create server
 const server = http.createServer((req, res) => {
     console.log(req.url, req.method);
+    myEmitter.emit('log', `${req.url}\t${req.method}`, 'reqLog.txt');
 
     let filePath;
 
@@ -38,7 +47,7 @@ const server = http.createServer((req, res) => {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'text/html');
         filePath = path.join(__dirname, 'views', 'index.html');
-        fs.readFile(filePath, 'utf8', (err, data) => {
+        fs.readFil(filePath, 'utf8', (err, data) => {
             res.end(data);
         });
     }
@@ -81,7 +90,7 @@ const server = http.createServer((req, res) => {
 
     // if not index or root path then to make .html not required in url 
     if (!extension && req.url.slice(-1) !== '/') filePath += '.html';
-
+    console.log('File Path : ', filePath);
     const fileExists = fs.existsSync(filePath);
 
     if (fileExists) {
@@ -101,7 +110,7 @@ const server = http.createServer((req, res) => {
                 res.writeHead(res.statusCode, { 'Location': '/' });
                 res.end();
                 break;
-            default: 
+            default:
                 serverFile(path.join(__dirname, 'views', '404.html'), 'text/html', res);
                 break;
         }
