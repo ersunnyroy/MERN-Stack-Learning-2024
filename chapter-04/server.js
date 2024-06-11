@@ -31,7 +31,7 @@ const whitelist = ["https://www.google.com", "http://localhost:5000", "http://lo
 
 const corsOptions = {
     origin: (origin, callback) => {
-        if (whitelist.indexOf(origin) !== -1) {
+        if (whitelist.indexOf(origin) !== -1 || !origin) {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
@@ -91,5 +91,10 @@ app.get('/chain(.html)?', [one, two, three]);
 app.get('/*', (req, res) => {
     res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
 });
+
+app.use((err, req, res, next) => {
+    console.log(err.stack);
+    res.status(500).send(err.message);
+})
 
 app.listen(PORT, () => console.log(`Server is running on PORT : ${PORT}`));
