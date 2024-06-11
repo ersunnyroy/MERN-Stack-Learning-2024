@@ -3,6 +3,17 @@ const app = express();
 const path = require('path');
 const PORT = process.env.PORT || 3500;
 
+// built in middleware to handle urlencoded data
+// in other words form-data
+// 'content-type': 'application/x-www-form-urlencoded'
+app.use(express.urlencoded({ extended: false }));
+
+// built in middleware for handling json data 
+app.use(express.json());
+
+// built in middleware for serving static files
+app.use(express.static(path.join(__dirname, '/public')));
+
 // regex to make the route work with only /  or only index or index.html in url
 app.get('^/$|/index(.html)?', (req, res) => {
     // All three ways to send response and response with file 
@@ -52,7 +63,5 @@ app.get('/chain(.html)?', [one, two, three]);
 app.get('/*', (req, res) => {
     res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
 });
-
-
 
 app.listen(PORT, () => console.log(`Server is running on PORT : ${PORT}`));
