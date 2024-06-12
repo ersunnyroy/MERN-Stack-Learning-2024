@@ -3,8 +3,7 @@ const router = express.Router();
 const path = require('path');
 
 const data = {};
-
-data.employees = require('../public/data/employees.json');
+data.employees = require('../../model/employees.json');
 
 // handling all the route by route() on place of get post put delete or patch 
 router.route('/')
