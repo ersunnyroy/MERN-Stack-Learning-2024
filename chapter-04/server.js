@@ -22,9 +22,9 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '/public')));
 app.use('/subdir', express.static(path.join(__dirname, '/public')));
 
-app.use('/subdir', require('./routes/subdir'));
-
 app.use('/', require('./routes/root'));
+app.use('/subdir', require('./routes/subdir'));
+app.use('/employees', require('./routes/employees'));
 
 
 
