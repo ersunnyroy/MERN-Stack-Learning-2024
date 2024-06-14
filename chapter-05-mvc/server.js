@@ -5,7 +5,7 @@ const PORT = process.env.PORT || 3500;
 const cors = require('cors');
 
 const { logger } = require('./middleware/logEvents');
-const  errorHandler  = require('./middleware/errorHandler');
+const errorHandler = require('./middleware/errorHandler');
 
 // built in middleware to handle urlencoded data
 // in other words form-data
