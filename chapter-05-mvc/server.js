@@ -26,6 +26,7 @@ app.use('/', require('./routes/root'));
 app.use('/subdir', require('./routes/subdir'));
 app.use('/employees', require('./routes/api/employees'));
 app.use('/register', require('./routes/api/register'));
+app.use('/login', require('./routes/api/login'));
 app.use(logger);
 
 // third party cors middleware // CROSS ORIGIN RESOURCE SHARING
@@ -45,41 +46,6 @@ const corsOptions = {
 }
 
 app.use(cors(corsOptions));
-
-
-
-// route handlers
-app.get('/hello(.html)?', (req, res, next) => {
-    console.log(`Attempted to load hello.html`);
-    next();
-}, (req, res) => {
-    res.send('Hello World From Next Function');
-});
-
-
-// chaining route handlers
-const one = (req, res, next) => {
-    console.log('One');
-    next();
-}
-
-const two = (req, res, next) => {
-    console.log('two');
-    next();
-}
-
-const three = (req, res, next) => {
-    console.log('three');
-    res.send('Finished!');
-}
-
-
-app.get('/chain(.html)?', [one, two, three]);
-
-app.get('/*', (req, res) => {
-    res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
-});
-
 
 app.use(errorHandler);
 
