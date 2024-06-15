@@ -35,7 +35,7 @@ const handleLogin = async (req, res) => {
             // save refresh token with current user 
             const otherUsers = userDB.users.filter(person => person.username !== user.username);
             const currentUser = { ...user, refreshToken };
-            console.log('other users',otherUsers);
+            console.log('other users', otherUsers);
             userDB.setUsers([...otherUsers, currentUser]);
 
             await fsPromises.writeFile(
@@ -48,6 +48,7 @@ const handleLogin = async (req, res) => {
                 JSON.stringify(userDB.users)
             )
 
+            res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
             return res.status(200).json({ status: true, message: 'Login successful', accessToken });
         } else {
             return res.status(400).json({ status: false, error_message: 'Invalid username or password' });

@@ -3,11 +3,12 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const cors = require('cors');
-console.log(process.env.PORT);
 const PORT = process.env.PORT || 3500;
+const cookieParser = require('cookie-parser');
 
 const { logger } = require('./middleware/logEvents');
 const errorHandler = require('./middleware/errorHandler');
+const verifyJWT = require('./middleware/verifyJWT');
 
 // built in middleware to handle urlencoded data
 // in other words form-data
@@ -16,6 +17,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // built in middleware for handling json data 
 app.use(express.json());
+app.use(cookieParser());
 
 // third party middleware 
 
@@ -26,9 +28,11 @@ app.use('/subdir', express.static(path.join(__dirname, '/public')));
 
 app.use('/', require('./routes/root'));
 app.use('/subdir', require('./routes/subdir'));
-app.use('/employees', require('./routes/api/employees'));
 app.use('/register', require('./routes/api/register'));
 app.use('/login', require('./routes/api/login'));
+app.use('/refresh', require('./routes/api/refresh'));
+app.use(verifyJWT);
+app.use('/employees', require('./routes/api/employees'));
 app.use(logger);
 
 // third party cors middleware // CROSS ORIGIN RESOURCE SHARING
