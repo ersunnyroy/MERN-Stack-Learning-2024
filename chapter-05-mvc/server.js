@@ -6,9 +6,14 @@ const cors = require('cors');
 const PORT = process.env.PORT || 3500;
 const cookieParser = require('cookie-parser');
 
+// middlewares
 const { logger } = require('./middleware/logEvents');
 const errorHandler = require('./middleware/errorHandler');
 const verifyJWT = require('./middleware/verifyJWT');
+const credentials = require('./middleware/credentials');
+
+//config
+const { corsOptions } = require('./config/corsOptions.js');
 
 // built in middleware to handle urlencoded data
 // in other words form-data
@@ -30,27 +35,14 @@ app.use('/', require('./routes/root'));
 app.use('/subdir', require('./routes/subdir'));
 app.use('/register', require('./routes/api/register'));
 app.use('/login', require('./routes/api/login'));
+app.use('/logout', require('./routes/api/logout'));
 app.use('/refresh', require('./routes/api/refresh'));
 app.use(verifyJWT);
 app.use('/employees', require('./routes/api/employees'));
 app.use(logger);
 
 // third party cors middleware // CROSS ORIGIN RESOURCE SHARING
-
-// whitelisting domains limited 
-const whitelist = ["https://www.google.com", "http://localhost:5000", "http://localhost:3500"];
-
-const corsOptions = {
-    origin: (origin, callback) => {
-        if (whitelist.indexOf(origin) !== -1 || !origin) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    optionsSuccessStatus: 200
-}
-
+app.use(credentials);
 app.use(cors(corsOptions));
 
 app.use(errorHandler);
