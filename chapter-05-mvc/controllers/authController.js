@@ -23,13 +23,13 @@ const handleLogin = async (req, res) => {
             // create JWT
             const accessToken = await jwt.sign(
                 {
-                    "Userinfo": {
+                    "UserInfo": {
                         "username": user.username,
                         "roles": roles
                     }
                 },
                 process.env.ACCESS_TOKEN_SECRET,
-                { expiresIn: '30s' }
+                { expiresIn: '30m' }
             );
 
             const refreshToken = await jwt.sign(
