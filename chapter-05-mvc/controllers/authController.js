@@ -19,9 +19,15 @@ const handleLogin = async (req, res) => {
     try {
         const match = await bcrypt.compare(password, user.password);
         if (match) {
+            const roles = Object.values(user.roles);
             // create JWT
             const accessToken = await jwt.sign(
-                { username: user.username },
+                {
+                    "Userinfo": {
+                        "username": user.username,
+                        "roles": roles
+                    }
+                },
                 process.env.ACCESS_TOKEN_SECRET,
                 { expiresIn: '30s' }
             );
@@ -35,7 +41,7 @@ const handleLogin = async (req, res) => {
             // save refresh token with current user 
             const otherUsers = userDB.users.filter(person => person.username !== user.username);
             const currentUser = { ...user, refreshToken };
-            console.log('other users', otherUsers);
+            // console.log('other users', otherUsers);
             userDB.setUsers([...otherUsers, currentUser]);
 
             await fsPromises.writeFile(
