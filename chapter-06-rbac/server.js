@@ -5,6 +5,9 @@ const path = require('path');
 const cors = require('cors');
 const PORT = process.env.PORT || 3500;
 const cookieParser = require('cookie-parser');
+const mongoose = require('mongoose');
+const ConnectDB = require('./config/dbCon');
+
 
 // middlewares
 const { logger } = require('./middleware/logEvents');
@@ -47,4 +50,7 @@ app.use(cors(corsOptions));
 
 app.use(errorHandler);
 
-app.listen(PORT, () => console.log(`Server is running on PORT : ${PORT}`));
+
+ConnectDB.connection.once('open', () => {
+    app.listen(PORT, () => console.log(`Server is running on PORT : ${PORT}`));
+})
