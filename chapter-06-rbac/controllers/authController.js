@@ -1,20 +1,23 @@
-const userDB = {
+require('dotenv').config();
+
+/* const userDB = {
     users: require('../model/users.json'),
     setUsers: function (data) { this.users = data }
 }
+ */
+
+const User = require('../model/User');
 
 const fsPromises = require('fs').promises;
 const path = require('path');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
-
 
 
 const handleLogin = async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) res.status(400).send({ status: false, error_message: `Username & Password are required` });
-    const user = userDB.users.find(person => person.username == username);
+    const user = await User.findOne({ username }).exec();
     if (!user) return res.status(400).json({ status: true, error_message: 'Invalid username or password' });
     try {
         const match = await bcrypt.compare(password, user.password);
@@ -32,21 +35,22 @@ const handleLogin = async (req, res) => {
                 { expiresIn: '1d' }
             );
 
-            // save refresh token with current user 
-            const otherUsers = userDB.users.filter(person => person.username !== user.username);
-            const currentUser = { ...user, refreshToken };
-            console.log('other users', otherUsers);
-            userDB.setUsers([...otherUsers, currentUser]);
+            /*  
+                // save refresh token with current user 
+                const otherUsers = userDB.users.filter(person => person.username !== user.username);
+                const currentUser = { ...user, refreshToken };
+                userDB.setUsers([...otherUsers, currentUser]); 
 
-            await fsPromises.writeFile(
-                path.join(__dirname, '..', 'model', 'users.json'),
-                JSON.stringify(userDB.users)
-            )
+                await fsPromises.writeFile(
+                    path.join(__dirname, '..', 'model', 'users.json'),
+                    JSON.stringify(userDB.users)
+                )
 
-            await fsPromises.writeFile(
-                path.join(__dirname, '..', 'model', 'users.json'),
-                JSON.stringify(userDB.users)
-            )
+                await fsPromises.writeFile(
+                    path.join(__dirname, '..', 'model', 'users.json'),
+                    JSON.stringify(userDB.users)
+                )
+            */
 
             res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000 });
             return res.status(200).json({ status: true, message: 'Login successful', accessToken });

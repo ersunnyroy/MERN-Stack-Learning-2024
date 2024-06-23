@@ -8,6 +8,18 @@ const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const ConnectDB = require('./config/dbCon');
 
+ConnectDB();
+
+mongoose.connection.once('open', () => {
+    console.log('DB connection open, starting server...');
+    app.listen(PORT, () => console.log(`Server is running on PORT : ${PORT}`));
+});
+
+// Additional error handling for mongoose connection
+mongoose.connection.on('error', (err) => {
+    console.error(`Mongoose connection error: ${err}`);
+});
+
 
 // middlewares
 const { logger } = require('./middleware/logEvents');
@@ -47,10 +59,4 @@ app.use(logger);
 // third party cors middleware // CROSS ORIGIN RESOURCE SHARING
 app.use(credentials);
 app.use(cors(corsOptions));
-
 app.use(errorHandler);
-
-
-ConnectDB.connection.once('open', () => {
-    app.listen(PORT, () => console.log(`Server is running on PORT : ${PORT}`));
-})
